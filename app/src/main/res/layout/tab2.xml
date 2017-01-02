@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <GridView
@@ -13,40 +14,75 @@
         android:numColumns="auto_fit"
         android:verticalSpacing="3dp" />
 
+
     <ImageView
         android:id="@+id/imageZoom"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"/>
-
-    <Button
-        android:id="@+id/connect_to_DB"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="Connect"
-
-        android:layout_alignParentBottom="true"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-    </Button>
+        android:layout_alignParentStart="true" />
 
-    <Button
-        android:id="@+id/download"
-        android:layout_height="wrap_content"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
-        android:text="Download"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
-    </Button>
-
-    <Button
-        android:id="@+id/append"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="Gallery"
-
+        android:layout_gravity="bottom|end"
+        app:elevation="6dp"
+        app:backgroundTint="@color/colorAccent"
+        app:pressedTranslationZ="12dp"
+        android:src="@drawable/ic_add"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="19dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
-    </Button>
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="invisible"
+        app:elevation="6dp"
+        app:backgroundTint="@color/colorFAB1"
+        app:pressedTranslationZ="12dp"
+        android:src="@drawable/ic_download"
+        android:layout_marginBottom="36dp"
+        android:layout_above="@+id/fab"
+        android:layout_alignLeft="@+id/fab"
+        android:layout_alignStart="@+id/fab" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="35dp"
+        android:layout_gravity="bottom|end"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorFAB2"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        android:src="@drawable/ic_photo"
+        android:layout_above="@+id/fab1"
+        android:layout_alignLeft="@+id/fab1"
+        android:layout_alignStart="@+id/fab1" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="35dp"
+        android:layout_gravity="bottom|end"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorFAB2"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        android:src="@drawable/ic_camera"
+        android:layout_above="@+id/fab2"
+        android:layout_alignLeft="@+id/fab2"
+        android:layout_alignStart="@+id/fab2" />
+
 </RelativeLayout>
