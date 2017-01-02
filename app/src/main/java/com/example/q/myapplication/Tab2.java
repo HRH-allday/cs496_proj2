@@ -1,17 +1,21 @@
 package com.example.q.myapplication;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
@@ -54,6 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static android.os.Build.VERSION_CODES.M;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
@@ -72,6 +77,7 @@ public class Tab2 extends Fragment {
     private Boolean isFabOpen = false;
     private FloatingActionButton fab, fab1, fab2, fab3;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
 
 
@@ -108,57 +114,59 @@ public class Tab2 extends Fragment {
 
 
 
-        final DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                doTakePhotoAction();
-            }
-        };
-        final DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                doTakeAlbumAction();
-            }
-        };
 
-        final DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        };
-
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animateFAB();
-            }
-        });
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoadAsyncTask la = new LoadAsyncTask();
-                la.execute();
-            }
-        });
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doTakeAlbumAction();
-            }
-        });
-        fab3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doTakePhotoAction();
-            }
-        });
 
 
 
         mGridView.setAdapter(mGridAdapter);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= M && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }else{
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    animateFAB();
+                }
+            });
+            fab1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LoadAsyncTask la = new LoadAsyncTask();
+                    la.execute();
+                }
+            });
+            fab2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doTakeAlbumAction();
+                }
+            });
+            fab3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doTakePhotoAction();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                Toast.makeText(getActivity(), "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public void sendingPhoto(){
@@ -317,7 +325,6 @@ public class Tab2 extends Fragment {
             this.uri=uri;
         }
     }
-
     public class LoadAsyncTask extends AsyncTask<Void,Void,String[]> {
 
 
@@ -497,16 +504,20 @@ public class Tab2 extends Fragment {
         protected void onPostExecute (final Bitmap result)
         {
             String file_path = filepath;
+            Log.i("split", file_path);
+            String[] parts = file_path.split("[.]");
+            String filename = parts[0];
+            String ext = parts[1];
             try {
                 File f = new File(file_path);
-                /*
+
                 int i = 1;
                  while(f.exists() == true) {
-                    file_path = filepath + "("+ i + ")" +".jpg";
+                    file_path = filename + "("+ i + ")." + ext;
                     f = new File(file_path);
                      i+=1;
                 }
-                */
+
                 f.createNewFile();
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
                 result.compress(Bitmap.CompressFormat.JPEG, 100, out);
