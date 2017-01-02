@@ -201,32 +201,35 @@ public class Tab1 extends Fragment {
         mAdapter.resetList();
         ind = "b";
         cont = "/fbcontact";
+        String user_id = AccessToken.getCurrentAccessToken().getUserId();
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/me/taggable_friends",
+                "/"+ user_id +"/taggable_friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                         JSONObject obj = response.getJSONObject();
-                        try {
-                            JSONArray data = obj.getJSONArray("data");
-                            jArray = new JSONArray();
-                            for(int i = 0; i < data.length(); i++){
-                                String name = data.getJSONObject(i).getString("name");
-                                JSONObject cont = new JSONObject();
-                                cont.put("name", name);
-                                jArray.put(cont);
-                                ListData fbcontact = new ListData();
-                                fbcontact.mName = name;
-                                fbcontact.mNumber = "";
-                                mAdapter.addItem(fbcontact);
+                        if(obj != null) {
+                            try {
+                                JSONArray data = obj.getJSONArray("data");
+                                jArray = new JSONArray();
+                                for (int i = 0; i < data.length(); i++) {
+                                    String name = data.getJSONObject(i).getString("name");
+                                    JSONObject cont = new JSONObject();
+                                    cont.put("name", name);
+                                    jArray.put(cont);
+                                    ListData fbcontact = new ListData();
+                                    fbcontact.mName = name;
+                                    fbcontact.mNumber = "";
+                                    mAdapter.addItem(fbcontact);
+                                }
+                                mAdapter.notifyDataSetChanged();
+                                PostThread p = new PostThread();
+                                p.start();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            mAdapter.notifyDataSetChanged();
-                            PostThread p = new PostThread();
-                            p.start();
-                        }catch (JSONException e){
-                            e.printStackTrace();
                         }
                     }
                 }
