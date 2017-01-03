@@ -53,28 +53,16 @@
         android:gravity="right"
         android:orientation="horizontal">
 
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/register_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-
-            android:layout_below="@+id/textView"
-            android:layout_gravity="center"
-            android:layout_toLeftOf="@+id/textView"
-            android:text="Register" />
-
-        <Button
-
-            android:id="@+id/test_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Test"
-
-
-            />
+            android:layout_width="52dp"
+            android:layout_height="138dp"
+            android:layout_gravity="bottom|end"
+            app:elevation="6dp"
+            app:backgroundTint="@color/colorAccent"
+            app:pressedTranslationZ="12dp"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add" />
 
     </LinearLayout>
 </FrameLayout>

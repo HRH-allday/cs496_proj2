@@ -30,7 +30,7 @@ public class PageSelector extends AppCompatActivity implements TabLayout.OnTabSe
         //Adding the tabs using addTab() method
         tabLayout.addTab(tabLayout.newTab().setText("Contact"));
         tabLayout.addTab(tabLayout.newTab().setText("Gallary"));
-        tabLayout.addTab(tabLayout.newTab().setText("ToDo"));
+        tabLayout.addTab(tabLayout.newTab().setText("Auction"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         //Initializing viewPager
