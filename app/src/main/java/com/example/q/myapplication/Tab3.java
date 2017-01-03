@@ -13,6 +13,7 @@ import android.widget.Toast;
 public class Tab3 extends Fragment {
 
     static final int REQUEST_FOR_REGISTRATION = 110;
+    static final int REQUEST_FOR_AUCTION = 120;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -25,6 +26,15 @@ public class Tab3 extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),Registration.class);
                 startActivityForResult(intent, REQUEST_FOR_REGISTRATION);
+            }
+        });
+
+        Button test_button = (Button) view.findViewById(R.id.test_button);
+        test_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(),AuctionActivity.class);
+                startActivityForResult(intent, REQUEST_FOR_AUCTION);
             }
         });
 
@@ -41,6 +51,9 @@ public class Tab3 extends Fragment {
         if(requestCode == REQUEST_FOR_REGISTRATION){
 
             Toast.makeText(getContext(),"Activity registration worked",Toast.LENGTH_LONG);
+        }
+        else if(requestCode == REQUEST_FOR_AUCTION){
+            Toast.makeText(getContext(),"Auction worked",Toast.LENGTH_LONG);
         }
 
     }

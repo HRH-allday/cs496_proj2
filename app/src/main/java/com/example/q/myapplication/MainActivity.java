@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         bu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserAccount mApp = ((UserAccount) getApplicationContext());
+                UserAccount mApp = ((UserAccount) getApplication());
                 String name = ed.getText().toString().trim();
                 mApp.setGlobalVarValue(name);
                 Intent main = new Intent(ac, PageSelector.class);

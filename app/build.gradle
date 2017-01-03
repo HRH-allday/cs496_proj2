@@ -31,4 +31,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.android.support:design:25.1.0'
     compile 'com.koushikdutta.ion:ion:2.1.9'
+    compile('io.socket:socket.io-client:0.8.1') {
+        exclude group: 'org.json', module: 'json'
+    }
 }
