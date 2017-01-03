@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="3"
+        android:visibility="invisible"
         android:textSize="150dp" />
 
     <LinearLayout

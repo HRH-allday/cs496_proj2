@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -23,13 +24,17 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -37,6 +42,7 @@ import io.socket.emitter.Emitter;
 
 import static com.example.q.myapplication.R.anim.auction_start;
 import static com.example.q.myapplication.R.anim.auction_start_reverse;
+import static com.example.q.myapplication.R.id.price;
 
 /**
  * Created by q on 2017-01-03.
@@ -62,6 +68,12 @@ public class AuctionActivity extends Activity {
     private FloatingActionButton fab;
     private Animation fab_start, fab_end;
     boolean hidden=true;
+    private Date startD;
+    private EditText priceEdit;
+    private Button sendbtn;
+    private String currentPrice;
+
+
 
     {
         try {
@@ -73,23 +85,43 @@ public class AuctionActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.auction_main);
-        /*
+
         Intent intent = getIntent();
         String roomName = intent.getStringExtra("roomName");
-        String startdate = intent.getStringExtra("startDate");
-        */
-        /* for testing */
+        startdate = intent.getStringExtra("startDate");
+        minPrice = intent.getStringExtra("minPrice");
+        currentPrice = minPrice;
+        /* for testing
         String roomName = "testroom";
         minPrice = "10000원";
         //SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
+*/
+
+        auctionInfo = (TextView) findViewById(R.id.auctionInfo);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Date now = Calendar.getInstance().getTime();
+        try {
+            startD = format.parse( startdate );
+            Log.i("date",format.format(startD));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        int compare = now.compareTo(startD);
+        if(compare < 0){
+            auctionInfo.setText("경매시작 전 입니다");
+        }
+        else{
+            auctionInfo.setText("Price : "+minPrice);
+        }
         UserAccount ua = ((UserAccount) getApplication());
         userName = ua.getGlobalVarValue();
 
-        auctionInfo = (TextView) findViewById(R.id.auctionInfo);
+
 
         new AlarmHATT(getApplicationContext()).Alarm();
-
+        priceEdit = (EditText) findViewById(R.id.price_set);
+        sendbtn = (Button) findViewById(R.id.price_send);
         mMessageView = (ListView) findViewById(R.id.mChatList);
         mMessageAdapter = new MessageViewAdapter(this);
         mMessageView.setAdapter(mMessageAdapter);
@@ -162,6 +194,7 @@ public class AuctionActivity extends Activity {
         mSocket.on("auction start", onAuctionStart);
         mSocket.on("to newbie", onToNewbie);
         mSocket.on("new price", onNewPrice);
+        mSocket.on("user left", onUserLeft);
         mSocket.connect();
         mSocket.emit("room", roomName);
         mSocket.emit("add user", userName);
@@ -171,6 +204,21 @@ public class AuctionActivity extends Activity {
             @Override
             public void onClick(View v) {
                 attemptSend();
+            }
+        });
+        sendbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String price = priceEdit.getText().toString().trim();
+
+                if(Integer.parseInt(currentPrice) > Integer.parseInt(price) | TextUtils.isEmpty(price)){
+                    Toast.makeText(getApplicationContext(),"현재 입찰 가격보다 낮습니다!", Toast.LENGTH_LONG).show();
+                }
+                else mSocket.emit("deal", price);
+
+                priceEdit.setText("");
+
+                Log.i("how much", price);
             }
         });
     }
@@ -205,13 +253,17 @@ public class AuctionActivity extends Activity {
         mUserAdapter.addItem(u);
         mUserAdapter.notifyDataSetChanged();
     }
+    private void removeUser(String username){
+        mUserAdapter.removeUser(username);
+        mUserAdapter.notifyDataSetChanged();
+    }
 
     private void checkUser(String username){
-        if(isNewbie) addUser(username);
-        isNewbie = false;
+        if(!mUserAdapter.checkName(username)) addUser(username);
     }
 
     private void setPrice(String price){
+        currentPrice = price;
         auctionInfo.setText("Price : "+price);
     }
 
@@ -245,14 +297,14 @@ public class AuctionActivity extends Activity {
         }
         public void Alarm() {
             AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(AuctionActivity.this, AuctionSet.class);
+            Intent intent = new Intent(AuctionActivity.this, BroadcastD.class);
 
-            PendingIntent sender = PendingIntent.getActivity(AuctionActivity.this, 0, intent, 0);
+            PendingIntent sender = PendingIntent.getBroadcast(AuctionActivity.this, 0, intent, 0);
 
             Calendar calendar = Calendar.getInstance();
             //알람시간 calendar에 set해주기
 
-            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 19, 57, 0);
+            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), startD.getHours(), startD.getMinutes(), startD.getSeconds());
 
             //알람 예약
             am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
@@ -303,7 +355,31 @@ public class AuctionActivity extends Activity {
                     mSocket.emit("to newbie", userName);
 
                     // add the message to view
-                    addUser(username);
+                    if(!isNewbie) addUser(username);
+                    else isNewbie = false;
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onUserLeft = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String username;
+                    String numUser;
+                    try {
+                        username = data.getString("username");
+                        numUser = data.getString("numUsers");
+                    } catch (JSONException e) {
+                        return;
+                    }
+
+                    // add the message to view
+                    removeUser(username);
                 }
             });
         }
@@ -324,7 +400,7 @@ public class AuctionActivity extends Activity {
                     }
 
                     // add the message to view
-                    if(isNewbie) checkUser(username);
+                     checkUser(username);
                 }
             });
         }
@@ -340,6 +416,7 @@ public class AuctionActivity extends Activity {
                     String price;
                     try {
                         price = data.getString("price");
+                        Log.i("price", price);
                     } catch (JSONException e) {
                         return;
                     }
@@ -484,6 +561,17 @@ public class AuctionActivity extends Activity {
 
         public void remove(int position){
             mListData.remove(position);
+        }
+
+        public void removeUser(String usernaem){
+            for(int i = 0; i < mListData.size() ; i++){
+                if(mListData.get(i).mName == usernaem) {
+                    mListData.remove(i);
+                    return;
+                }
+
+            }
+
         }
 
         @Override
