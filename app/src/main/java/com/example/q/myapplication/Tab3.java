@@ -3,11 +3,15 @@ package com.example.q.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class Tab3 extends Fragment {
@@ -40,7 +44,21 @@ public class Tab3 extends Fragment {
         super.onActivityResult(requestCode,resultcode,Data);
         if(requestCode == REQUEST_FOR_REGISTRATION){
 
-            Toast.makeText(getContext(),"Activity registration worked",Toast.LENGTH_LONG);
+            if(resultcode ==1){
+
+                Toast.makeText(getContext(),"Activity registration worked",Toast.LENGTH_LONG);
+                try {
+
+                    Log.d("result_joject",Data.getExtras().getString("result"));
+                    JSONObject resultObject  = new JSONObject(Data.getExtras().getString("result"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
         }
 
     }

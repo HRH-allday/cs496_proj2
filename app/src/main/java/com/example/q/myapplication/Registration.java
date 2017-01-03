@@ -141,13 +141,14 @@ public class Registration extends Activity{
 
 
 
-
-
                                                                        Log.d("son",result.getResult());
+
                                                                        JSONObject jobj = new JSONObject(result.getResult());
+                                                                       Intent resultIntent = new Intent();
+                                                                       resultIntent.putExtra("result",result.getResult());
+                                                                       setResult(1,resultIntent);
+                                                                        finish();
 
-
-                                                                       Toast.makeText(getApplicationContext(), jobj.getString("response"), Toast.LENGTH_SHORT).show();
 
                                                                    } catch (JSONException e1) {
                                                                        e1.printStackTrace();
