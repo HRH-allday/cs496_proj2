@@ -77,6 +77,8 @@ public class Registration extends Activity{
         Button upload_button = (Button)findViewById(R.id.image_select);
         Button register_button = (Button)findViewById(R.id.register_auction);
 
+
+
         final EditText title = (EditText)findViewById(R.id.name);
         final EditText description = (EditText)findViewById(R.id.desc_text);
         final EditText minimum_price = (EditText)findViewById(R.id.price);
@@ -114,6 +116,8 @@ public class Registration extends Activity{
                                                @Override
                                                public void onClick(View v) {
 
+                                                   UserAccount ua = ((UserAccount) getApplication());
+                                                   String userName = ua.getGlobalVarValue();
                                                    String input_title = title.getText().toString();
                                                    String input_desc = description.getText().toString();
                                                    String price = minimum_price.getText().toString();
@@ -125,6 +129,7 @@ public class Registration extends Activity{
                                                    File uploading_file = new File(path);
                                                    Future uploading = Ion.with(getApplicationContext())
                                                            .load("http://52.79.155.110:3000/register_auction")
+                                                           .setMultipartParameter("username", userName)
                                                            .setMultipartParameter("postname",input_title)
                                                            .setMultipartParameter("price",price)
                                                            .setMultipartParameter("date",date)

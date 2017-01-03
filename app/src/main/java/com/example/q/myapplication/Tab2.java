@@ -327,10 +327,6 @@ public class Tab2 extends Fragment {
     }
     public class LoadAsyncTask extends AsyncTask<Void,Void,String[]> {
 
-
-
-
-
         @Override
         protected String[] doInBackground(Void... params) {
 
