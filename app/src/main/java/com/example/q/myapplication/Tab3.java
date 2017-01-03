@@ -34,17 +34,16 @@ import java.util.ArrayList;
 public class Tab3 extends Fragment {
 
     static final int REQUEST_FOR_REGISTRATION = 110;
+    static final int REQUEST_FOR_AUCTION = 120;
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView auctionView;
-//    private static ArrayList<DataModel> data;
+    //    private static ArrayList<DataModel> data;
     static View.OnClickListener auctionOnClickListener;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
 
 
         View view = inflater.inflate(R.layout.tab3, container, false);
@@ -57,16 +56,15 @@ public class Tab3 extends Fragment {
         auctionView.setLayoutManager(layoutManager);
         auctionView.setItemAnimator(new DefaultItemAnimator());
 
-        createAsyncTask da= new createAsyncTask();
+        createAsyncTask da = new createAsyncTask();
         da.execute();
-
 
 
         JSONObject testing = new JSONObject();
         try {
-            testing.put("name","sdfsdf");
-            testing.put("date","2016-07-12");
-            testing.put("price","2000");
+            testing.put("name", "sdfsdf");
+            testing.put("date", "2016-07-12");
+            testing.put("price", "2000");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -74,19 +72,23 @@ public class Tab3 extends Fragment {
         jar.put(testing);
 
 
-
-
         Button register_button = (Button) view.findViewById(R.id.register_button);
         register_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(),Registration.class);
+                Intent intent = new Intent(getContext(), Registration.class);
                 startActivityForResult(intent, REQUEST_FOR_REGISTRATION);
             }
         });
 
-
-
+        Button test_button = (Button) view.findViewById(R.id.test_button);
+        test_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AuctionActivity.class);
+                startActivityForResult(intent, REQUEST_FOR_AUCTION);
+            }
+        });
 
 
         return view;
@@ -111,38 +113,42 @@ public class Tab3 extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultcode, Intent Data){
-        super.onActivityResult(requestCode,resultcode,Data);
-        if(requestCode == REQUEST_FOR_REGISTRATION){
+    public void onActivityResult(int requestCode, int resultcode, Intent Data) {
+        super.onActivityResult(requestCode, resultcode, Data);
+        if (requestCode == REQUEST_FOR_REGISTRATION) {
 
-            if(resultcode ==1){
+            if (resultcode == 1) {
 
-                Toast.makeText(getContext(),"Activity registration worked",Toast.LENGTH_LONG);
+                Toast.makeText(getContext(), "Activity registration worked", Toast.LENGTH_LONG);
                 try {
 
-                    Log.d("result_joject",Data.getExtras().getString("result"));
-                    JSONObject resultObject  = new JSONObject(Data.getExtras().getString("result"));
-
+                    Log.d("result_joject", Data.getExtras().getString("result"));
+                    JSONObject resultObject = new JSONObject(Data.getExtras().getString("result"));
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                Toast.makeText(getContext(), "Activity registration worked", Toast.LENGTH_LONG);
+            } else if (requestCode == REQUEST_FOR_AUCTION) {
+                Toast.makeText(getContext(), "Auction worked", Toast.LENGTH_LONG);
             }
 
 
         }
 
+
     }
 
-    public class createAsyncTask extends AsyncTask<Void,Void,JSONArray> {
+
+    public class createAsyncTask extends AsyncTask<Void, Void, JSONArray> {
 
         @Override
         protected JSONArray doInBackground(Void... params) {
 
             try {
-                URL u ;
+                URL u;
                 u = new URL("http://52.79.155.110:3000/call_auction_list");
                 Log.d("connected2", "sasasasas");
                 HttpURLConnection huc = (HttpURLConnection) u.openConnection();
@@ -158,19 +164,17 @@ public class Tab3 extends Fragment {
 
                 InputStream is = null;
 
-                if(status > 400){
+                if (status > 400) {
 
                     is = huc.getErrorStream();
-                }
-
-                else {
+                } else {
                     is = huc.getInputStream();
                 }
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 byte[] byteBuffer = new byte[1024];
                 byte[] byteData = null;
                 int nLength = 0;
-                while((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
                     baos.write(byteBuffer, 0, nLength);
                 }
                 byteData = baos.toByteArray();
@@ -178,16 +182,14 @@ public class Tab3 extends Fragment {
                 String response = new String(byteData);
 
 
-
                 JSONArray receiving = new JSONArray(response);
 
-                Log.d("sdfsdfsdf",response);
+                Log.d("sdfsdfsdf", response);
 
 
+                for (int i = 0; i < receiving.length(); i++) {
 
-                for(int i = 0;i<receiving.length();i++){
-
-                    Log.d("JSONname",receiving.getJSONObject(i).getString("postname"));
+                    Log.d("JSONname", receiving.getJSONObject(i).getString("postname"));
                 }
 
 
@@ -207,40 +209,19 @@ public class Tab3 extends Fragment {
 
         }
 
-        protected void onPostExecute(final JSONArray result){
+        protected void onPostExecute(final JSONArray result) {
 
 
-            adapter = new auctionAdapter(result,null);
+            adapter = new auctionAdapter(result, null);
             auctionView.setAdapter(adapter);
 
-//            ab.setSingleChoiceItems(item, 0,
-//                    new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int whichButton) {
-//                            // 각 리스트를 선택했을때
-//                            selector[0] = whichButton;
 //
-//                        }
-//                    }).setPositiveButton("Ok",
-//                    new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int whichButton) {
-//                            Log.d("whichbutton", String.valueOf(selector[0]));
-//                            Tab2.DownloadAsyncTask da= new Tab2.DownloadAsyncTask();
-//                            if(selector[0] == -1) selector[0] = 0;
-//                            da.execute(item[selector[0]]);
-//                            // OK 버튼 클릭시 , 여기서 선택한 값을 메인 Activity 로 넘기면 된다.
-//                        }
-//                    }).setNegativeButton("Cancel",
-//                    new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int whichButton) {
-//                            // Cancel 버튼 클릭시
-//                        }
-//                    });
-
 
 
         }
     }
-
-
-
 }
+
+
+
+
