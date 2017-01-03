@@ -15,6 +15,15 @@
         android:visibility="invisible"
         android:textSize="150dp" />
 
+    <TextView
+        android:text="Time : 00"
+        android:layout_marginTop="35dp"
+        android:gravity="center"
+        android:textSize="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/timerText" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -35,18 +44,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginTop="50dp"
             android:weightSum="5">
 
             <ListView
                 android:id="@+id/mChatList"
                 android:layout_width="match_parent"
-                android:layout_height="450dp"
+                android:layout_height="410dp"
                 android:layout_weight="1"></ListView>
 
             <ListView
                 android:id="@+id/mUserList"
                 android:layout_width="match_parent"
-                android:layout_height="450dp"
+                android:layout_height="410dp"
                 android:layout_weight="4"></ListView>
 
         </LinearLayout>

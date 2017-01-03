@@ -8,10 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +26,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -47,6 +44,7 @@ public class Tab3 extends Fragment {
     private static auctionAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView auctionView;
+    private String roomDate;
     //    private static ArrayList<DataModel> data;
     private String ec2url = "http://ec2-52-79-155-110.ap-northeast-2.compute.amazonaws.com:3000";
     static View.OnClickListener auctionOnClickListener;
@@ -64,6 +62,7 @@ public class Tab3 extends Fragment {
         View view = inflater.inflate(R.layout.tab3, container, false);
 
         mSocket.on("test", onTest);
+        mSocket.connect();
         auctionOnClickListener = new MyOnClickListener(getContext());
 
         auctionView = (RecyclerView) view.findViewById(R.id.auction_view);
@@ -131,7 +130,52 @@ public class Tab3 extends Fragment {
                         return;
                     }
 
+                    createAsyncTask da = new createAsyncTask();
+                    da.execute();
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onNewPrice2 = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String name;
+                    String price;
+                    JSONObject testing = new JSONObject();
+                    try {
+                        name = data.getString("name");
+                        price = data.getString("date");
+                    } catch (JSONException e) {
+                        return;
+                    }
+
                     adapter.addObject(testing);
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onGetTime = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String date;
+                    JSONObject testing = new JSONObject();
+                    try {
+                        date = data.getString("date");
+                    } catch (JSONException e) {
+                        return;
+                    }
+
+                    roomDate = date;
                 }
             });
         }
@@ -165,6 +209,7 @@ public class Tab3 extends Fragment {
 
                     Log.d("result_joject", Data.getExtras().getString("result"));
                     JSONObject resultObject = new JSONObject(Data.getExtras().getString("result"));
+                    mSocket.emit("create room", resultObject.getString("_id"), resultObject.getString("price"), resultObject.getString("date"), resultObject.getString("postname"));
 
 
                 } catch (JSONException e) {
@@ -263,12 +308,30 @@ public class Tab3 extends Fragment {
 
     public void itemHandler(JSONObject jobj){
         try {
-            Intent intent = new Intent(this.getActivity(), AuctionActivity.class);
-            intent.putExtra("startDate", jobj.getString("date"));
-            intent.putExtra("roomName", jobj.getString("_id"));
-            intent.putExtra("startDate", jobj.getString("date"));
-            intent.putExtra("minPrice", jobj.getString("price"));
-            startActivity(intent);
+            String startDate = jobj.getString("date");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            Date now = Calendar.getInstance().getTime();
+            Date startD = Calendar.getInstance().getTime();;
+            try {
+                startD = format.parse( startDate );
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            int compare = now.compareTo(startD);
+            if(compare < 0){
+                Intent intent = new Intent(this.getActivity(), AuctionActivity.class);
+                String idname = jobj.getString("_id");
+                //mSocket.emit("get time", idname);
+
+                intent.putExtra("startDate", jobj.getString("date"));
+                intent.putExtra("roomName", jobj.getString("_id"));
+                intent.putExtra("startDate", jobj.getString("date"));
+                intent.putExtra("minPrice", jobj.getString("price"));
+                startActivity(intent);
+            }
+
+
+
         }catch (JSONException e){
             e.printStackTrace();
         }

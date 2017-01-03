@@ -121,7 +121,7 @@ public class Registration extends Activity{
                                                    String date = dtv.getText().toString();
                                                    String time = ttv.getText().toString();
 
-                                                   mSocket.emit("create room", price, date);
+
 
 
                                                    File uploading_file = new File(path);

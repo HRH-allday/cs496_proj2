@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:orientation="horizontal"
+        android:layout_marginTop="5dp"
         android:weightSum="5">
 
         <TextView
@@ -15,7 +16,7 @@
             android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:text="Text"
-            android:textSize="15dp"
+            android:textSize="25dp"
             />
 
         <TextView
@@ -23,7 +24,7 @@
             android:layout_width="304dp"
             android:layout_height="wrap_content"
             android:text="Date"
-            android:textSize="15dp" />
+            android:textSize="25dp" />
 
     </LinearLayout>
 

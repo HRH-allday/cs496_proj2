@@ -16,8 +16,6 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-import org.json.JSONObject;
 
 
 /**
@@ -56,7 +54,7 @@ public class auctionAdapter extends RecyclerView.Adapter <auctionAdapter.MyViewH
 
     public void addObject(JSONObject jobj){
         dataSet.put(jobj);
-        notifyDataSetChanged();
+        this.notifyDataSetChanged();
     }
 
     @Override

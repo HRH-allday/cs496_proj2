@@ -4,11 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,14 +38,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import static android.R.string.no;
 import static com.example.q.myapplication.R.anim.auction_start;
 import static com.example.q.myapplication.R.anim.auction_start_reverse;
-import static com.example.q.myapplication.R.id.price;
+import static java.lang.Thread.sleep;
 
 /**
  * Created by q on 2017-01-03.
@@ -72,7 +77,11 @@ public class AuctionActivity extends Activity {
     private EditText priceEdit;
     private Button sendbtn;
     private String currentPrice;
-
+    private String roomName;
+    private TextView timerText;
+    private boolean ended = false;
+    private CountDownTimer timer;
+    private String winner = "Youngkyu";
 
 
     {
@@ -87,7 +96,7 @@ public class AuctionActivity extends Activity {
         setContentView(R.layout.auction_main);
 
         Intent intent = getIntent();
-        String roomName = intent.getStringExtra("roomName");
+        roomName = intent.getStringExtra("roomName");
         startdate = intent.getStringExtra("startDate");
         minPrice = intent.getStringExtra("minPrice");
         currentPrice = minPrice;
@@ -97,6 +106,8 @@ public class AuctionActivity extends Activity {
         //SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
 */
+        timerText = (TextView) findViewById(R.id.timerText);
+
 
         auctionInfo = (TextView) findViewById(R.id.auctionInfo);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -108,11 +119,36 @@ public class AuctionActivity extends Activity {
             e.printStackTrace();
         }
         int compare = now.compareTo(startD);
+        int nowsecond =  now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        int startsecond =  startD.getHours() * 3600 + startD.getMinutes() * 60 + startD.getSeconds();
+        int leftsecond = startsecond - nowsecond;
         if(compare < 0){
             auctionInfo.setText("경매시작 전 입니다");
+            new CountDownTimer(leftsecond * 1000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                public void onFinish() {
+                    startAuction(startdate);
+                }
+            }.start();
         }
         else{
             auctionInfo.setText("Price : "+minPrice);
+            timer = new CountDownTimer(30000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    timerText.setText("seconds remaining: " + millisUntilFinished / 1000);
+                }
+
+                public void onFinish() {
+                    timerText.setText("done!");
+                    ended = true;
+                    finishAuction();
+                }
+            }.start();
         }
         UserAccount ua = ((UserAccount) getApplication());
         userName = ua.getGlobalVarValue();
@@ -129,6 +165,7 @@ public class AuctionActivity extends Activity {
         mUserView = (ListView) findViewById(R.id.mUserList);
         mUserAdapter = new UserViewAdapter(this);
         mUserView.setAdapter(mUserAdapter);
+
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -197,24 +234,29 @@ public class AuctionActivity extends Activity {
         mSocket.on("user left", onUserLeft);
         mSocket.connect();
         mSocket.emit("room", roomName);
-        mSocket.emit("add user", userName);
+        mSocket.emit("add user", userName, roomName);
         mInputMessageView = (EditText) findViewById(R.id.edit);
         Button b = (Button) findViewById(R.id.send);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(ended) return;
                 attemptSend();
             }
         });
         sendbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(ended) return;
                 String price = priceEdit.getText().toString().trim();
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+                String now = format.format(Calendar.getInstance().getTime());
 
                 if(Integer.parseInt(currentPrice) > Integer.parseInt(price) | TextUtils.isEmpty(price)){
                     Toast.makeText(getApplicationContext(),"현재 입찰 가격보다 낮습니다!", Toast.LENGTH_LONG).show();
                 }
-                else mSocket.emit("deal", price);
+                else mSocket.emit("deal", roomName, price, now, userName);
 
                 priceEdit.setText("");
 
@@ -259,6 +301,7 @@ public class AuctionActivity extends Activity {
     }
 
     private void checkUser(String username){
+        Log.i("check",username);
         if(!mUserAdapter.checkName(username)) addUser(username);
     }
 
@@ -274,19 +317,44 @@ public class AuctionActivity extends Activity {
 
         auctionInfo.setText("경매가 시작됩니다!");
 
-        tv.startAnimation(start);
-        tv.startAnimation(start_reverse);
-        tv.setText("2");
-        tv.startAnimation(start);
-        tv.startAnimation(start_reverse);
-        tv.setText("1");
-        tv.startAnimation(start);
-        tv.startAnimation(start_reverse);
-        tv.setText("START!");
-        tv.startAnimation(start);
-        tv.startAnimation(start_reverse);
+        try {
+            tv.startAnimation(start);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.startAnimation(start_reverse);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.setText("2");
+            tv.startAnimation(start);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.startAnimation(start_reverse);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.setText("1");
+            tv.startAnimation(start);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.startAnimation(start_reverse);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.setText("START");
+            tv.startAnimation(start);
+            TimeUnit.MILLISECONDS.sleep(500);
+            tv.startAnimation(start_reverse);
+            TimeUnit.MILLISECONDS.sleep(500);
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
 
         auctionInfo.setText("Price : "+minPrice);
+        timer = new CountDownTimer(30000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                timerText.setText("seconds remaining: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                timerText.setText("done!");
+                ended = true;
+                finishAuction();
+            }
+        }.start();
 
     }
 
@@ -344,10 +412,10 @@ public class AuctionActivity extends Activity {
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     String username;
-                    String numUser;
+                    String price;
                     try {
                         username = data.getString("username");
-                        numUser = data.getString("numUsers");
+                        price = data.getString("price");
                     } catch (JSONException e) {
                         return;
                     }
@@ -356,7 +424,11 @@ public class AuctionActivity extends Activity {
 
                     // add the message to view
                     if(!isNewbie) addUser(username);
-                    else isNewbie = false;
+                    else{
+                        currentPrice = price;
+                        auctionInfo.setText("Price : "+currentPrice);
+                        isNewbie = false;
+                    }
                 }
             });
         }
@@ -416,12 +488,27 @@ public class AuctionActivity extends Activity {
                     String price;
                     try {
                         price = data.getString("price");
+                        winner = data.getString("user");
                         Log.i("price", price);
                     } catch (JSONException e) {
                         return;
                     }
-
                     setPrice(price);
+
+                    timer.cancel();
+                    timer = new CountDownTimer(30000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            timerText.setText("seconds remaining: " + millisUntilFinished / 1000);
+                        }
+
+                        public void onFinish() {
+                            timerText.setText("done!");
+                            ended = true;
+                            finishAuction();
+                        }
+                    }.start();
+
                 }
             });
         }
@@ -518,6 +605,13 @@ public class AuctionActivity extends Activity {
         }
     }
 
+    private void finishAuction(){
+        AlertDialog.Builder ab = new AlertDialog.Builder(this);
+        ab.setMessage("경매가 끝났습니다 " +
+                " 승자는 " + winner +" 입니다" );
+        ab.setPositiveButton("ok", null);
+        ab.show();
+    }
     private class ViewHolder2 {
         public TextView mName;
 
@@ -547,7 +641,7 @@ public class AuctionActivity extends Activity {
         }
         public boolean checkName(String nameC){
             for(User u : mListData){
-                if(u.mName == nameC) return true;
+                if(u.mName.equals(nameC)) return true;
             }
             return false;
         }
@@ -556,7 +650,9 @@ public class AuctionActivity extends Activity {
         }
 
         public void addItem(User addInfo){
+
             mListData.add(addInfo);
+            notifyDataSetChanged();
         }
 
         public void remove(int position){
@@ -565,7 +661,7 @@ public class AuctionActivity extends Activity {
 
         public void removeUser(String usernaem){
             for(int i = 0; i < mListData.size() ; i++){
-                if(mListData.get(i).mName == usernaem) {
+                if(mListData.get(i).mName.equals(usernaem)) {
                     mListData.remove(i);
                     return;
                 }
