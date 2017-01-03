@@ -17,12 +17,32 @@
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/start"
+        android:layout_toStartOf="@+id/start"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp" />
 
     <Button
         android:id="@+id/start"
         android:text="start"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginRight="23dp"
+        android:layout_marginEnd="23dp"
+        android:layout_marginTop="18dp"
+        android:layout_below="@+id/login_button"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:id="@+id/chooseId"
+        android:hint="Type ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/start"
+        android:layout_alignLeft="@+id/login_button"
+        android:layout_alignStart="@+id/login_button"
+        android:layout_toLeftOf="@+id/start"
+        android:layout_toStartOf="@+id/start" />
 </RelativeLayout>

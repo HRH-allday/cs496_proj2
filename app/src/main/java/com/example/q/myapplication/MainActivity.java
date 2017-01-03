@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -41,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
         info = (TextView)findViewById(R.id.info);
         loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "user_friends", "user_photos", "email", "user_birthday", "public_profile"));
-
-
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
             @Override
@@ -70,9 +69,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Button bu = (Button) findViewById(R.id.start);
+        final EditText ed = (EditText) findViewById(R.id.chooseId);
         bu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                UserAccount mApp = ((UserAccount) getApplicationContext());
+                String name = ed.getText().toString().trim();
+                mApp.setGlobalVarValue(name);
                 Intent main = new Intent(ac, PageSelector.class);
                 startActivity(main);
             }
