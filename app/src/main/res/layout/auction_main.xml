@@ -1,71 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:padding="16dp"
-    android:orientation="vertical"
-    android:weightSum="1">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 
     <TextView
-        android:text="AUCTION"
-        android:textAlignment="center"
-        android:id="@+id/auctionInfo"
+        android:id="@+id/timer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"/>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="5">
-        <ListView
-            android:layout_width="match_parent"
-            android:id="@+id/mChatList"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="1"
-            android:layout_height="370dp"></ListView>
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="3"
+        android:visibility="invisible"
+        android:textSize="150dp" />
 
-        <ListView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/auctionInfo"
             android:layout_width="match_parent"
-            android:layout_height="370dp"
-            android:id="@+id/mUserList"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="4"></ListView>
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="AUCTION"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="30dp" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+            <ListView
+                android:id="@+id/mChatList"
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:layout_weight="1"></ListView>
+
+            <ListView
+                android:id="@+id/mUserList"
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:layout_weight="4"></ListView>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"></View>
 
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
+        android:id="@+id/reveal_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="400dp"
+        android:background="#b3e5fc"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#b3e5fc"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/deal1"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/one" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/deal2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/five" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/deal3"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/ten" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/deal4"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/fifty" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+            <EditText
+                android:id="@+id/price_set"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="4"
+                android:hint="가격을 입력하세요"
+                android:inputType="number"/>
+
+            <Button
+                android:id="@+id/price_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:text="send" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
         android:orientation="horizontal"
         android:weightSum="5">
+
         <EditText
             android:id="@+id/edit"
-            android:hint="text here"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/send"
-            android:layout_toStartOf="@+id/send"
-            android:layout_weight="4"/>
+            android:layout_gravity="bottom"
+            android:layout_weight="4"
+            android:hint="text here" />
 
         <Button
             android:id="@+id/send"
-            android:text="send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/edit"
-            android:layout_alignBottom="@+id/edit"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_weight="1"/>
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:text="send" />
 
     </LinearLayout>
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="52dp"
+        android:layout_height="138dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="50dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="#b3e5fc"
+        app:elevation="5dp"
+        app:pressedTranslationZ="12dp" />
+
+</FrameLayout>

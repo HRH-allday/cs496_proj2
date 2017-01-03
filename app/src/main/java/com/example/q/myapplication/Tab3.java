@@ -9,6 +9,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,26 +31,39 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 
 public class Tab3 extends Fragment {
 
+    private Socket mSocket;
     static final int REQUEST_FOR_REGISTRATION = 110;
     static final int REQUEST_FOR_AUCTION = 120;
-    private static RecyclerView.Adapter adapter;
+    private static auctionAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView auctionView;
     //    private static ArrayList<DataModel> data;
+    private String ec2url = "http://ec2-52-79-155-110.ap-northeast-2.compute.amazonaws.com:3000";
     static View.OnClickListener auctionOnClickListener;
 
-
+    {
+        try {
+            mSocket = IO.socket(ec2url);
+        } catch (URISyntaxException e) {
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
         View view = inflater.inflate(R.layout.tab3, container, false);
 
+        mSocket.on("test", onTest);
         auctionOnClickListener = new MyOnClickListener(getContext());
 
         auctionView = (RecyclerView) view.findViewById(R.id.auction_view);
@@ -55,6 +71,7 @@ public class Tab3 extends Fragment {
         layoutManager = new LinearLayoutManager(getActivity());
         auctionView.setLayoutManager(layoutManager);
         auctionView.setItemAnimator(new DefaultItemAnimator());
+
 
         createAsyncTask da = new createAsyncTask();
         da.execute();
@@ -95,6 +112,30 @@ public class Tab3 extends Fragment {
 
 
     }
+    private Emitter.Listener onTest = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String name;
+                    String date;
+                    String price;
+                    JSONObject testing = new JSONObject();
+                    try {
+                        testing.put("date", data.getString("price"));
+                        testing.put("name", data.getString("name"));
+                        testing.put("price", data.getString("date"));
+                    } catch (JSONException e) {
+                        return;
+                    }
+
+                    adapter.addObject(testing);
+                }
+            });
+        }
+    };
 
     private static class MyOnClickListener implements View.OnClickListener {
 
@@ -182,8 +223,6 @@ public class Tab3 extends Fragment {
                 String response = new String(byteData);
 
 
-
-
                 JSONArray receiving = new JSONArray(response);
                 Log.d("sdfsdfsdf", response);
 
@@ -213,15 +252,25 @@ public class Tab3 extends Fragment {
         protected void onPostExecute(final JSONArray result) {
 
 
-
-
-
-            adapter = new auctionAdapter(result, null);
+            adapter = new auctionAdapter(result, null, Tab3.this);
             auctionView.setAdapter(adapter);
 
 //
 
 
+        }
+    }
+
+    public void itemHandler(JSONObject jobj){
+        try {
+            Intent intent = new Intent(this.getActivity(), AuctionActivity.class);
+            intent.putExtra("startDate", jobj.getString("date"));
+            intent.putExtra("roomName", jobj.getString("_id"));
+            intent.putExtra("startDate", jobj.getString("date"));
+            intent.putExtra("minPrice", jobj.getString("price"));
+            startActivity(intent);
+        }catch (JSONException e){
+            e.printStackTrace();
         }
     }
 }

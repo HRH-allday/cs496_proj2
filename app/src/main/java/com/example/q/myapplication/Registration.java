@@ -1,39 +1,22 @@
 package com.example.q.myapplication;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
-
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
-import android.view.Menu;
-
 import android.view.View;
-
+import android.widget.Button;
 import android.widget.DatePicker;
-
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
-import android.widget.Toast;
-
-import android.os.Bundle;
-import android.view.LayoutInflater;
-
-import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
@@ -43,8 +26,12 @@ import com.koushikdutta.ion.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static android.R.attr.path;
-import static android.R.id.edit;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.Calendar;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
 
 /**
  * Created by Q on 2017-01-02.
@@ -52,14 +39,23 @@ import static android.R.id.edit;
 
 public class Registration extends Activity{
 
+    private Socket mSocket;
     int year, month, day, hour, minute;
     static final int DATE_DIALOG_ID = 100;
     static final int TIME_DIALOG_ID = 200;
     static final int PICK_FROM_ALBUM = 110;
+
+    private String ec2url = "http://ec2-52-79-155-110.ap-northeast-2.compute.amazonaws.com:3000";
     TextView dtv ;
     TextView ttv ;
     TextView itv;
 
+    {
+        try {
+            mSocket = IO.socket(ec2url);
+        } catch (URISyntaxException e) {
+        }
+    }
     String path="";
     @Override
     public void onCreate(Bundle saveInstancestate){
@@ -76,7 +72,7 @@ public class Registration extends Activity{
         Button date_button = (Button) findViewById(R.id.date_select);
         Button upload_button = (Button)findViewById(R.id.image_select);
         Button register_button = (Button)findViewById(R.id.register_auction);
-
+        mSocket.connect();
 
 
         final EditText title = (EditText)findViewById(R.id.name);
@@ -115,7 +111,6 @@ public class Registration extends Activity{
 
                                                @Override
                                                public void onClick(View v) {
-
                                                    UserAccount ua = ((UserAccount) getApplication());
                                                    String userName = ua.getGlobalVarValue();
                                                    String input_title = title.getText().toString();
@@ -125,6 +120,9 @@ public class Registration extends Activity{
 
                                                    String date = dtv.getText().toString();
                                                    String time = ttv.getText().toString();
+
+                                                   mSocket.emit("create room", price, date);
+
 
                                                    File uploading_file = new File(path);
                                                    Future uploading = Ion.with(getApplicationContext())

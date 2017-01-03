@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 repositories {
     mavenCentral()
@@ -34,4 +35,5 @@ dependencies {
     compile('io.socket:socket.io-client:0.8.1') {
         exclude group: 'org.json', module: 'json'
     }
+
 }

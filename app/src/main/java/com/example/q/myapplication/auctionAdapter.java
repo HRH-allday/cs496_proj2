@@ -3,6 +3,7 @@ package com.example.q.myapplication;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
@@ -16,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
+import org.json.JSONObject;
 
 
 /**
@@ -26,6 +28,7 @@ public class auctionAdapter extends RecyclerView.Adapter <auctionAdapter.MyViewH
 
     private JSONArray dataSet;
     private Bitmap received_image;
+    private Tab3 currentFragment;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -33,6 +36,7 @@ public class auctionAdapter extends RecyclerView.Adapter <auctionAdapter.MyViewH
         TextView textViewPrice;
         TextView textViewDate;
         ImageView imageView;
+        CardView cardView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -40,13 +44,19 @@ public class auctionAdapter extends RecyclerView.Adapter <auctionAdapter.MyViewH
             this.textViewDate = (TextView) itemView.findViewById(R.id.textViewDate);
             this.textViewPrice= (TextView) itemView.findViewById(R.id.textViewPrice);
             this.imageView = (ImageView) itemView.findViewById(R.id.ProductImage);
-
+            this.cardView = (CardView) itemView.findViewById(R.id.card_view);
         }
     }
-    public auctionAdapter(JSONArray data, Bitmap bt) {
-        this.dataSet = data;
-        this.received_image= bt;
 
+    public auctionAdapter(JSONArray data, Bitmap bt, Tab3 ct) {
+        this.dataSet = data;
+        this.received_image = bt;
+        this.currentFragment = ct;
+    }
+
+    public void addObject(JSONObject jobj){
+        dataSet.put(jobj);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -72,6 +82,16 @@ public class auctionAdapter extends RecyclerView.Adapter <auctionAdapter.MyViewH
 
 
 
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    currentFragment.itemHandler((JSONObject)dataSet.get(listPosition));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        });
         try {
             JSONObject jobj= dataSet.getJSONObject(listPosition);
             Log.d ("flag1",jobj.getString("postname"));
