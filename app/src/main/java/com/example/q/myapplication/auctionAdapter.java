@@ -2,7 +2,10 @@ package com.example.q.myapplication;
 
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 
@@ -65,14 +69,36 @@ public class auctionAdapter extends RecyclerView.Adapter <auctionAdapter.MyViewH
         TextView textViewPrice = holder.textViewPrice;
         ImageView imageView = holder.imageView;
 
+
+
+
         try {
-            textViewName.setText(dataSet.getJSONObject(listPosition).getString("postname"));
-            textViewDate.setText(dataSet.getJSONObject(listPosition).getString("date"));
-            textViewPrice.setText(dataSet.getJSONObject(listPosition).getString("price"));
+            JSONObject jobj= dataSet.getJSONObject(listPosition);
+            Log.d ("flag1",jobj.getString("postname"));
+
+            byte[] decodedString = Base64.decode(jobj.getString("img"), Base64.DEFAULT);
+
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            int height = decodedByte.getHeight();
+            int width = decodedByte.getWidth();
+// Toast.makeText(this, width + " , " + height, Toast.LENGTH_SHORT).show();
+            Bitmap resized = null;
+            while (height > 80) {
+                resized = Bitmap.createScaledBitmap(decodedByte, 80, 80, true);
+                height = resized.getHeight();
+                width = resized.getWidth();
+            }
+
+            textViewName.setText(jobj.getString("postname"));
+            textViewDate.setText(jobj.getString("date"));
+            textViewPrice.setText(jobj.getString("price")+"Won");
+
+
+            imageView.setImageBitmap(decodedByte);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        imageView.setImageBitmap(this.received_image);
+
     }
 
     @Override

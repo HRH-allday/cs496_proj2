@@ -473,7 +473,6 @@ public class Tab2 extends Fragment {
                 }
                 byteData = baos.toByteArray();
                 Bitmap bmp = BitmapFactory.decodeByteArray(byteData, 0, byteData.length);
-
                 is.close();
                 String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/proj2";
                 File dir = new File(dirPath);

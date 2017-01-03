@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:tag="cards main container">
 
@@ -24,45 +24,49 @@
             <ImageView
                 android:id="@+id/ProductImage"
                 android:tag="image_tag"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_weight="1"
+                android:layout_weight="0.96"
                 android:src="@drawable/ic_photo"/>
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_weight="2"
+                android:layout_marginTop="5dp"
+                android:layout_weight="3"
                 android:orientation="vertical"
                 >
 
                 <TextView
                     android:id="@+id/textViewName"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="22dp"
+                    android:textSize="18dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:text="Product name"
+
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
                 <TextView
                     android:id="@+id/textViewPrice"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="16dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
+                    android:textSize="14dp"
                     android:text="Price"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <TextView
                     android:id="@+id/textViewDate"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="15dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:text="Date"
+                    android:textSize="12dp"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             </LinearLayout>
