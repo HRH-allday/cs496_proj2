@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -88,7 +88,7 @@ public class Tab3 extends Fragment {
         jar.put(testing);
 
 
-        Button register_button = (Button) view.findViewById(R.id.register_button);
+        FloatingActionButton register_button = (FloatingActionButton) view.findViewById(R.id.register_button);
         register_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,14 +97,7 @@ public class Tab3 extends Fragment {
             }
         });
 
-        Button test_button = (Button) view.findViewById(R.id.test_button);
-        test_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), AuctionActivity.class);
-                startActivityForResult(intent, REQUEST_FOR_AUCTION);
-            }
-        });
+
 
 
         return view;

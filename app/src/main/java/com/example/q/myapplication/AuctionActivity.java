@@ -320,23 +320,32 @@ public class AuctionActivity extends Activity {
         try {
             tv.startAnimation(start);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.VISIBLE);
             tv.startAnimation(start_reverse);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.INVISIBLE);
             tv.setText("2");
             tv.startAnimation(start);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.VISIBLE);
             tv.startAnimation(start_reverse);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.INVISIBLE);
             tv.setText("1");
             tv.startAnimation(start);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.VISIBLE);
             tv.startAnimation(start_reverse);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.INVISIBLE);
             tv.setText("START");
             tv.startAnimation(start);
             TimeUnit.MILLISECONDS.sleep(500);
+            tv.setVisibility(View.VISIBLE);
             tv.startAnimation(start_reverse);
             TimeUnit.MILLISECONDS.sleep(500);
+
+            tv.setVisibility(View.INVISIBLE);
         }
         catch (InterruptedException e){
             e.printStackTrace();
@@ -421,10 +430,10 @@ public class AuctionActivity extends Activity {
                     }
 
                     mSocket.emit("to newbie", userName);
-
+                    Log.i("entered", username);
+                    checkUser(username);
                     // add the message to view
-                    if(!isNewbie) addUser(username);
-                    else{
+                    if(isNewbie) {
                         currentPrice = price;
                         auctionInfo.setText("Price : "+currentPrice);
                         isNewbie = false;
